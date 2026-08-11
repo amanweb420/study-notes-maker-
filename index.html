@@ -624,16 +624,12 @@ function printPage(){
 
 </script>
 <script>
-document.addEventListener("focusin", function (e) {
+document.addEventListener("click", function(e) {
 
     const box = e.target;
 
     if (box.tagName !== "TEXTAREA") return;
 
-  
-    
-
-    // Notes वाला box fullscreen
     box.style.position = "fixed";
     box.style.top = "0";
     box.style.left = "0";
@@ -642,7 +638,7 @@ document.addEventListener("focusin", function (e) {
     box.style.zIndex = "99999";
     box.style.background = "white";
     box.style.color = "#222";
-    box.style.padding = "60px 18px 20px";
+    box.style.padding = "70px 18px 20px";
     box.style.fontSize = "20px";
     box.style.lineHeight = "1.7";
     box.style.boxSizing = "border-box";
@@ -650,12 +646,14 @@ document.addEventListener("focusin", function (e) {
     box.style.borderRadius = "0";
     box.style.resize = "none";
 
-    if (!document.getElementById("closeNotesButton")) {
+    box.focus();
+
+    if (!document.getElementById("notesCloseButton")) {
 
         const close = document.createElement("button");
 
-        close.id = "closeNotesButton";
-        close.innerText = "✕ Done";
+        close.id = "notesCloseButton";
+        close.innerText = "✓ Done";
 
         close.style.position = "fixed";
         close.style.top = "10px";
@@ -668,7 +666,7 @@ document.addEventListener("focusin", function (e) {
         close.style.borderRadius = "8px";
         close.style.fontSize = "16px";
 
-        close.onclick = function () {
+        close.onclick = function() {
 
             box.style.position = "";
             box.style.top = "";
