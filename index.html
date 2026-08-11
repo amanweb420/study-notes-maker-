@@ -623,73 +623,81 @@ function printPage(){
 }
 
 </script>
-<script>
-const notesBox = document.getElementById("notes");
+  <script>
+document.addEventListener("click", function (event) {
 
-if (notesBox) {
-    notesBox.addEventListener("click", function () {
+    const box = event.target.closest("textarea");
 
-        notesBox.style.position = "fixed";
-        notesBox.style.top = "0";
-        notesBox.style.left = "0";
-        notesBox.style.width = "100vw";
-        notesBox.style.height = "100vh";
-        notesBox.style.minHeight = "100vh";
-        notesBox.style.zIndex = "9999";
-        notesBox.style.margin = "0";
-        notesBox.style.padding = "60px 18px 20px";
-        notesBox.style.boxSizing = "border-box";
-        notesBox.style.border = "none";
-        notesBox.style.borderRadius = "0";
-        notesBox.style.background = "white";
-        notesBox.style.fontSize = "20px";
-        notesBox.style.lineHeight = "1.7";
-        notesBox.style.resize = "none";
+    if (!box) return;
 
-        notesBox.focus();
+    // Photo वाले textarea को छोड़ दो
+    if (
+        box.placeholder &&
+        box.placeholder.toLowerCase().includes("photo")
+    ) {
+        return;
+    }
 
-        if (!document.getElementById("closeNotesButton")) {
-            const button = document.createElement("button");
+    // Notes box को Full Screen करो
+    box.style.position = "fixed";
+    box.style.top = "0";
+    box.style.left = "0";
+    box.style.width = "100vw";
+    box.style.height = "100vh";
+    box.style.zIndex = "99999";
+    box.style.background = "white";
+    box.style.padding = "60px 18px 20px";
+    box.style.fontSize = "20px";
+    box.style.lineHeight = "1.7";
+    box.style.boxSizing = "border-box";
+    box.style.border = "none";
+    box.style.borderRadius = "0";
+    box.style.resize = "none";
 
-            button.id = "closeNotesButton";
-            button.innerText = "✕ Done";
+    box.focus();
 
-            button.style.position = "fixed";
-            button.style.top = "10px";
-            button.style.right = "12px";
-            button.style.zIndex = "10000";
-            button.style.padding = "10px 16px";
-            button.style.border = "none";
-            button.style.borderRadius = "8px";
-            button.style.background = "#1976d2";
-            button.style.color = "white";
-            button.style.fontSize = "16px";
+    // Close button
+    if (!document.getElementById("notesCloseButton")) {
 
-            button.onclick = function () {
-                notesBox.style.position = "";
-                notesBox.style.top = "";
-                notesBox.style.left = "";
-                notesBox.style.width = "";
-                notesBox.style.height = "";
-                notesBox.style.minHeight = "";
-                notesBox.style.zIndex = "";
-                notesBox.style.margin = "";
-                notesBox.style.padding = "";
-                notesBox.style.boxSizing = "";
-                notesBox.style.border = "";
-                notesBox.style.borderRadius = "";
-                notesBox.style.background = "";
-                notesBox.style.fontSize = "";
-                notesBox.style.lineHeight = "";
-                notesBox.style.resize = "";
+        const close = document.createElement("button");
 
-                button.remove();
-            };
+        close.id = "notesCloseButton";
+        close.innerText = "✕ Done";
 
-            document.body.appendChild(button);
-        }
-    });
-}
-</script>
+        close.style.position = "fixed";
+        close.style.top = "10px";
+        close.style.right = "12px";
+        close.style.zIndex = "100000";
+        close.style.padding = "10px 18px";
+        close.style.background = "#1976d2";
+        close.style.color = "white";
+        close.style.border = "none";
+        close.style.borderRadius = "8px";
+        close.style.fontSize = "16px";
+
+        close.onclick = function () {
+
+            box.style.position = "";
+            box.style.top = "";
+            box.style.left = "";
+            box.style.width = "";
+            box.style.height = "";
+            box.style.zIndex = "";
+            box.style.background = "";
+            box.style.padding = "";
+            box.style.fontSize = "";
+            box.style.lineHeight = "";
+            box.style.boxSizing = "";
+            box.style.border = "";
+            box.style.borderRadius = "";
+            box.style.resize = "";
+
+            close.remove();
+        };
+
+        document.body.appendChild(close);
+    }
+});
+      </script>
 </body>
     </html>
