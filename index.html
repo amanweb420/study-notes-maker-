@@ -1,15 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Study Notes Maker</title>
-   <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 
 <body>
 
-    <h1>Study Notes Maker</h1>
+<header class="top">
+    <h1>📚 Study Notes Maker</h1>
+    <p>Notes • Question Paper • PDF</p>
+</header>
 
-    <p>Notes, PDF और Test Paper आसानी से बनाएं</p>.
-    <button>Start Creating</button>
+<main>
+
+    <!-- Photo to Text -->
+    <section class="card">
+        <h2>📷 Photo से Text</h2>
+
+        <input type="file" id="imageInput" accept="image/*">
+
+        <button onclick="readPhoto()">Photo पढ़ें</button>
+
+        <p id="ocrStatus"></p>
+
+        <textarea id="notesText"
+            placeholder="Photo का text यहाँ आएगा..."></textarea>
+    </section>
+
+
+    <!-- Question Paper -->
+    <section class="card">
+
+        <h2>📝 Question Paper Maker</h2>
+
+        <input id="institute"
+            placeholder="Coaching / School का नाम">
+
+        <input id="paperTitle"
+            placeholder="Test / Exam का नाम">
+
+        <input id="subject"
+            placeholder="Subject">
+
+        <div class="row">
+            <input id="className"
+                placeholder="Class">
+
+            <input id="marks"
+                placeholder="Marks">
+        </div>
+
+        <div class="row">
+            <input id="time"
+                placeholder="Time">
+
+            <input id="date"
+                placeholder="Date">
+        </div>
+
+        <textarea id="questions"
+            placeholder="यहाँ अपने Questions लिखें...
+
+Q1. __________________________
+
+Q2. __________________________
+
+Q3. __________________________"></textarea>
+
+        <button onclick="makePaper()">
+            🎨 Paper तैयार करें
+        </button>
+
+    </section>
+
+
+    <!-- Preview -->
+    <section class="card">
+
+        <h2>👀 Preview</h2>
+
+        <div id="paper" class="paper">
+
+            <h2 id="showInstitute">
+                YOUR COACHING / SCHOOL NAME
+            </h2>
+
+            <h3 id="showTitle">
+                TEST PAPER
+            </h3>
+
+            <p id="showSubject">
+                Subject: __________
+            </p>
+
+            <div class="paperInfo">
+                <span id="showClass">Class: ___</span>
+                <span id="showMarks">Marks: ___</span>
+                <span id="showTime">Time: ___</span>
+            </div>
+
+            <hr>
+
+            <div id="showQuestions">
+                Questions यहाँ दिखाई देंगे।
+            </div>
+
+        </div>
+
+        <button onclick="printPaper()">
+            📄 Print / Save PDF
+        </button>
+
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+
 </body>
-</html>
+    </html>
