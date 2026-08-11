@@ -623,6 +623,73 @@ function printPage(){
 }
 
 </script>
+<script>
+const notesBox = document.getElementById("notes");
 
+if (notesBox) {
+    notesBox.addEventListener("click", function () {
+
+        notesBox.style.position = "fixed";
+        notesBox.style.top = "0";
+        notesBox.style.left = "0";
+        notesBox.style.width = "100vw";
+        notesBox.style.height = "100vh";
+        notesBox.style.minHeight = "100vh";
+        notesBox.style.zIndex = "9999";
+        notesBox.style.margin = "0";
+        notesBox.style.padding = "60px 18px 20px";
+        notesBox.style.boxSizing = "border-box";
+        notesBox.style.border = "none";
+        notesBox.style.borderRadius = "0";
+        notesBox.style.background = "white";
+        notesBox.style.fontSize = "20px";
+        notesBox.style.lineHeight = "1.7";
+        notesBox.style.resize = "none";
+
+        notesBox.focus();
+
+        if (!document.getElementById("closeNotesButton")) {
+            const button = document.createElement("button");
+
+            button.id = "closeNotesButton";
+            button.innerText = "✕ Done";
+
+            button.style.position = "fixed";
+            button.style.top = "10px";
+            button.style.right = "12px";
+            button.style.zIndex = "10000";
+            button.style.padding = "10px 16px";
+            button.style.border = "none";
+            button.style.borderRadius = "8px";
+            button.style.background = "#1976d2";
+            button.style.color = "white";
+            button.style.fontSize = "16px";
+
+            button.onclick = function () {
+                notesBox.style.position = "";
+                notesBox.style.top = "";
+                notesBox.style.left = "";
+                notesBox.style.width = "";
+                notesBox.style.height = "";
+                notesBox.style.minHeight = "";
+                notesBox.style.zIndex = "";
+                notesBox.style.margin = "";
+                notesBox.style.padding = "";
+                notesBox.style.boxSizing = "";
+                notesBox.style.border = "";
+                notesBox.style.borderRadius = "";
+                notesBox.style.background = "";
+                notesBox.style.fontSize = "";
+                notesBox.style.lineHeight = "";
+                notesBox.style.resize = "";
+
+                button.remove();
+            };
+
+            document.body.appendChild(button);
+        }
+    });
+}
+</script>
 </body>
     </html>
