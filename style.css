@@ -1,83 +1,269 @@
-async function readPhoto() {
+* {
+    box-sizing: border-box;
+}
 
-    const input = document.getElementById("imageInput");
-    const status = document.getElementById("ocrStatus");
-    const textBox = document.getElementById("notesText");
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef7fb;
+    color: #222;
+}
 
-    if (!input.files.length) {
-        alert("पहले Photo चुनें।");
-        return;
+header {
+    background: linear-gradient(135deg, #1976d2, #42a5f5);
+    color: white;
+    padding: 25px 15px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.container {
+    width: 94%;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.10);
+}
+
+.card h2 {
+    color: #1976d2;
+    margin-top: 0;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 7px 0;
+    border: 1px solid #bbb;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 230px;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 9px;
+    background: #1976d2;
+    color: white;
+    font-size: 16px;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+
+/* =========================
+   NOTES EDITOR
+========================= */
+
+#ocrText {
+    min-height: 330px;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+
+/* =========================
+   A4 NOTES PAGE
+========================= */
+
+.notes-page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 20px auto;
+    padding: 18mm 16mm;
+    color: #111;
+
+    border: 1px solid #ddd;
+
+    box-shadow:
+        0 5px 25px rgba(0,0,0,.15);
+
+    overflow-wrap: break-word;
+}
+
+.notes-page-header {
+    text-align: center;
+    border-bottom: 3px solid #1976d2;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.notes-page-header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.notes-page-header h2 {
+    margin: 8px 0 0;
+    font-size: 19px;
+    font-weight: normal;
+}
+
+.notes-heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0 12px;
+}
+
+.notes-content {
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+.important-box {
+    margin: 20px 0;
+    padding: 14px;
+
+    background: #fff8d6;
+
+    border-left: 5px solid #ffb300;
+
+    border-radius: 6px;
+}
+
+.page-footer {
+    margin-top: 35px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+}
+
+
+/* =========================
+   QUESTION PAPER
+========================= */
+
+.question-paper {
+    width: 210mm;
+    min-height: 297mm;
+
+    background: white;
+
+    margin: 20px auto;
+
+    padding: 18mm 16mm;
+
+    border: 5px double #222;
+
+    color: black;
+}
+
+.paper-header {
+    text-align: center;
+    border-bottom: 2px solid #222;
+    padding-bottom: 15px;
+}
+
+.paper-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    margin: 18px 0;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 96%;
     }
 
-    const image = input.files[0];
+    .card {
+        padding: 15px;
+    }
 
-    status.innerText = "⏳ Photo पढ़ी जा रही है...";
+    /*
+       A4 page को mobile में पूरा छोटा दिखाएँ
+    */
 
-    try {
+    .notes-page,
+    .question-paper {
+        width: 100%;
+        min-height: auto;
 
-        const result = await Tesseract.recognize(
-            image,
-            "eng",
-            {
-                logger: info => {
-                    if (info.status === "recognizing text") {
-                        status.innerText =
-                            "⏳ Text पढ़ा जा रहा है: " +
-                            Math.round(info.progress * 100) +
-                            "%";
-                    }
-                }
-            }
-        );
+        padding: 25px 18px;
 
-        textBox.value = result.data.text;
+        margin: 15px 0;
 
-        status.innerText =
-            "✅ Text तैयार है। अब आप खुद इसे सुधार सकते हैं।";
+        box-shadow: 0 3px 15px rgba(0,0,0,.12);
+    }
 
-    } catch (error) {
+    .notes-page-header h1 {
+        font-size: 23px;
+    }
 
-        console.error(error);
+    .notes-content {
+        font-size: 16px;
+    }
 
-        status.innerText =
-            "❌ Photo पढ़ने में समस्या हुई।";
-
+    .paper-info {
+        grid-template-columns: 1fr;
     }
 }
 
 
-function makePaper() {
+/* =========================
+   PRINT / PDF
+========================= */
 
-    document.getElementById("showInstitute").innerText =
-        document.getElementById("institute").value ||
-        "YOUR COACHING / SCHOOL NAME";
+@media print {
 
-    document.getElementById("showTitle").innerText =
-        document.getElementById("paperTitle").value ||
-        "TEST PAPER";
+    body {
+        background: white;
+    }
 
-    document.getElementById("showSubject").innerText =
-        "Subject: " +
-        (document.getElementById("subject").value || "__________");
+    body > * {
+        display: none;
+    }
 
-    document.getElementById("showClass").innerText =
-        "Class: " +
-        (document.getElementById("className").value || "___");
+    #notesPrintArea {
+        display: block;
+    }
 
-    document.getElementById("showMarks").innerText =
-        "Marks: " +
-        (document.getElementById("marks").value || "___");
+    #notesPrintArea,
+    #notesPrintArea * {
+        visibility: visible;
+    }
 
-    document.getElementById("showTime").innerText =
-        "Time: " +
-        (document.getElementById("time").value || "___");
+    .notes-page {
+        margin: 0;
+        box-shadow: none;
+        border: none;
+        width: 210mm;
+        min-height: 297mm;
+    }
 
-    document.getElementById("showQuestions").innerText =
-        document.getElementById("questions").value ||
-        "Questions यहाँ दिखाई देंगे।";
-}
-
-
-function printPaper() {
-    window.print();
+    @page {
+        size: A4;
+        margin: 0;
+    }
 }
