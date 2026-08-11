@@ -7,3 +7,12 @@ body {
 h1 {
     color: #333333;
 }
+button {
+    background-color: white;
+    color: #333333;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
