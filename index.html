@@ -623,22 +623,17 @@ function printPage(){
 }
 
 </script>
-  <script>
-document.addEventListener("click", function (event) {
+<script>
+document.addEventListener("focusin", function (e) {
 
-    const box = event.target.closest("textarea");
+    const box = e.target;
 
-    if (!box) return;
+    if (box.tagName !== "TEXTAREA") return;
 
-    // Photo वाले textarea को छोड़ दो
-    if (
-        box.placeholder &&
-        box.placeholder.toLowerCase().includes("photo")
-    ) {
-        return;
-    }
+    // Photo वाला box fullscreen नहीं होगा
+    if (box.placeholder && box.placeholder.includes("Photo")) return;
 
-    // Notes box को Full Screen करो
+    // Notes वाला box fullscreen
     box.style.position = "fixed";
     box.style.top = "0";
     box.style.left = "0";
@@ -646,6 +641,7 @@ document.addEventListener("click", function (event) {
     box.style.height = "100vh";
     box.style.zIndex = "99999";
     box.style.background = "white";
+    box.style.color = "#222";
     box.style.padding = "60px 18px 20px";
     box.style.fontSize = "20px";
     box.style.lineHeight = "1.7";
@@ -654,14 +650,11 @@ document.addEventListener("click", function (event) {
     box.style.borderRadius = "0";
     box.style.resize = "none";
 
-    box.focus();
-
-    // Close button
-    if (!document.getElementById("notesCloseButton")) {
+    if (!document.getElementById("closeNotesButton")) {
 
         const close = document.createElement("button");
 
-        close.id = "notesCloseButton";
+        close.id = "closeNotesButton";
         close.innerText = "✕ Done";
 
         close.style.position = "fixed";
@@ -684,6 +677,7 @@ document.addEventListener("click", function (event) {
             box.style.height = "";
             box.style.zIndex = "";
             box.style.background = "";
+            box.style.color = "";
             box.style.padding = "";
             box.style.fontSize = "";
             box.style.lineHeight = "";
@@ -693,11 +687,12 @@ document.addEventListener("click", function (event) {
             box.style.resize = "";
 
             close.remove();
+            box.blur();
         };
 
         document.body.appendChild(close);
     }
 });
-      </script>
+</script>
 </body>
     </html>
