@@ -2,695 +2,109 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Study Notes Maker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#eef7fb;
-  color:#222;
+margin:0;
+background:#eef3f8;
+color:#17202a;
+font-family:Arial,"Noto Sans Devanagari",sans-serif
 }
 
 header{
-  background:linear-gradient(135deg,#1976d2,#42a5f5);
-  color:white;
-  padding:25px 15px;
-  text-align:center;
+background:linear-gradient(135deg,#1976d2,#5e35b1);
+color:white;
+padding:22px 15px;
+text-align:center
 }
 
 header h1{
-  margin:0;
-  font-size:32px;
+margin:0;
+font-size:29px
 }
 
 header p{
-  margin:8px 0 0;
+margin:8px 0 0
 }
 
 .container{
-  width:92%;
-  max-width:900px;
-  margin:20px auto;
+max-width:900px;
+margin:auto;
+padding:12px
 }
 
 .card{
-  background:white;
-  padding:20px;
-  margin-bottom:20px;
-  border-radius:18px;
-  box-shadow:0 5px 20px rgba(0,0,0,.10);
+background:white;
+border-radius:18px;
+padding:17px;
+margin:13px 0;
+box-shadow:0 5px 18px #0001
 }
 
-.card h2{
-  margin-top:0;
-  color:#1976d2;
+h2{
+margin:0 0 10px
 }
 
-input,textarea,select{
-  width:100%;
-  padding:12px;
-  margin:7px 0;
-  border:1px solid #bbb;
-  border-radius:8px;
-  font-size:16px;
+input,textarea{
+width:100%;
+padding:12px;
+border:1px solid #bbb;
+border-radius:10px;
+font-size:16px;
+margin:5px 0 10px
 }
 
 textarea{
-  min-height:150px;
-  resize:vertical;
+height:130px;
+min-height:130px;
+overflow-y:hidden;
+resize:vertical
+}
+
+textarea:focus{
+outline:2px solid #90caf9
 }
 
 button{
-  background:#1976d2;
-  color:white;
-  border:none;
-  padding:12px 20px;
-  border-radius:8px;
-  font-size:16px;
-  margin:6px 3px;
-  cursor:pointer;
+border:0;
+border-radius:10px;
+padding:11px 14px;
+margin:4px;
+background:#1976d2;
+color:white;
+font-size:15px;
+cursor:pointer
 }
 
-button:hover{
-  background:#125ca8;
+button.green{
+background:#2e7d32
 }
 
-.secondary{
-  background:#555;
+button.gray{
+background:#546e7a
 }
 
-.success{
-  background:#168a4a;
+button.orange{
+background:#ef6c00
 }
 
-.preview{
-  background:white;
-  border:1px solid #ccc;
-  padding:35px 25px;
-  margin-top:15px;
-  min-height:300px;
+button.red{
+background:#c62828
 }
 
-.preview-title{
-  text-align:center;
-  font-size:28px;
-  font-weight:bold;
-  border-bottom:3px solid #1976d2;
-  padding-bottom:10px;
-  margin-bottom:20px;
+.row{
+display:flex;
+gap:8px;
+flex-wrap:wrap
 }
 
-.note-heading{
-  font-size:23px;
-  font-weight:bold;
-  color:#1976d2;
-  margin-top:20px;
-}
-
-.important{
-  background:#fff8d8;
-  border-left:5px solid #ffb300;
-  padding:12px;
-  margin:15px 0;
-}
-
-.question-paper{
-  border:4px double #222;
-  padding:25px;
-  background:white;
-}
-
-.paper-header{
-  text-align:center;
-  border-bottom:2px solid #222;
-  padding-bottom:15px;
-}
-
-.paper-header h2{
-  margin:5px;
-}
-
-.paper-info{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:15px 0;
-}
-
-.status{
-  margin:10px 0;
-  font-weight:bold;
-}
-
-footer{
-  text-align:center;
-  padding:25px;
-  color:#666;
-}
-
-@media(max-width:600px){
-  header h1{
-    font-size:26px;
-  }
-
-  .card{
-    padding:15px;
-  }
-
-  .paper-info{
-    grid-template-columns:1fr;
-  }
-}
-
-@media print{
-  body *{
-    visibility:hidden;
-  }
-
-  #printArea,
-  #printArea *{
-    visibility:visible;
-  }
-
-  #printArea{
-    position:absolute;
-    left:0;
-    top:0;
-    width:100%;
-  }
-
-  button{
-    display:none;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>📚 Study Notes Maker</h1>
-  <p>Photo → Notes → Question Paper → PDF</p>
-</header>
-
-<div class="container">
-
-<!-- PHOTO TO TEXT -->
-
-<div class="card">
-
-<h2>📷 Photo से Notes बनाएं</h2>
-
-<p>
-अपनी कॉपी के लिखे हुए Notes की साफ फोटो चुनें।
-</p>
-
-<input type="file" id="imageInput" accept="image/*">
-
-<button onclick="readPhoto()">
-🔍 Photo पढ़ें
-</button>
-
-<div id="ocrStatus" class="status"></div>
-
-<textarea id="ocrText"
-placeholder="Photo से निकला text यहाँ दिखाई देगा..."></textarea>
-
-<button onclick="makeNotes()">
-✨ Clean Notes बनाएं
-</button>
-
-</div>
-
-
-<!-- NOTES MAKER -->
-
-<div class="card">
-
-<h2>📝 Notes Maker</h2>
-
-<input id="subject"
-placeholder="Subject जैसे Physics">
-
-<input id="chapter"
-placeholder="Chapter / Topic">
-
-<input id="heading"
-placeholder="Notes की Heading">
-
-<textarea id="notesText"
-placeholder="यहाँ अपने Notes लिखें या ऊपर Photo से निकला text इस्तेमाल करें..."></textarea>
-
-<textarea id="importantText"
-placeholder="📌 Important Point (optional)"></textarea>
-
-<button onclick="makeNotes()">
-🎨 Notes तैयार करें
-</button>
-
-</div>
-
-
-<!-- NOTES PREVIEW -->
-
-<div class="card">
-
-<h2>👀 Notes Preview</h2>
-<div id="notesPreview" class="notes-page">
-
-<div class="preview-title">
-आपके Notes यहाँ दिखाई देंगे
-</div>
-
-<p>
-पहले Notes की जानकारी भरें और
-<strong>Notes तैयार करें</strong> दबाएँ।
-</p>
-
-</div>
-
-<button onclick="printPage()">
-🖨️ Print / Save PDF
-</button>
-
-</div>
-
-
-<!-- QUESTION PAPER -->
-
-<div class="card">
-
-<h2>📄 Question Paper Maker</h2>
-
-<input id="school"
-placeholder="Coaching / School का नाम">
-
-<input id="exam"
-placeholder="Test / Exam का नाम">
-
-<input id="paperSubject"
-placeholder="Subject">
-
-<input id="className"
-placeholder="Class">
-
-<input id="marks"
-placeholder="Total Marks">
-
-<input id="time"
-placeholder="Time">
-
-<input id="date"
-placeholder="Date">
-
-<textarea id="questions"
-placeholder="यहाँ अपने Questions लिखें..."></textarea>
-
-<button onclick="makePaper()">
-🎨 Paper तैयार करें
-</button>
-
-</div>
-
-
-<!-- PAPER PREVIEW -->
-
-<div class="card">
-
-<h2>👀 Question Paper Preview</h2>
-
-<div id="printArea">
-
-<div class="question-paper">
-
-<div class="paper-header">
-
-<h2 id="pSchool">
-YOUR COACHING / SCHOOL NAME
-</h2>
-
-<h3 id="pExam">
-TEST PAPER
-</h3>
-
-</div>
-
-<div class="paper-info">
-
-<div>
-<strong>Subject:</strong>
-<span id="pSubject">________</span>
-</div>
-
-<div>
-<strong>Class:</strong>
-<span id="pClass">________</span>
-</div>
-
-<div>
-<strong>Marks:</strong>
-<span id="pMarks">________</span>
-</div>
-
-<div>
-<strong>Time:</strong>
-<span id="pTime">________</span>
-</div>
-
-<div>
-<strong>Date:</strong>
-<span id="pDate">________</span>
-</div>
-
-</div>
-
-<hr>
-
-<h3>Questions</h3>
-
-<div id="pQuestions">
-यहाँ आपके Questions दिखाई देंगे।
-</div>
-
-</div>
-
-</div>
-
-<button onclick="printPage()">
-🖨️ Print / Save PDF
-</button>
-
-</div>
-
-</div>
-
-<footer>
-Study Notes Maker • Educational Project
-</footer>
-
-
-<script>
-
-let selectedImage = null;
-
-
-/* PHOTO SELECT */
-
-document.getElementById("imageInput")
-.addEventListener("change",function(event){
-
-  selectedImage = event.target.files[0];
-
-  if(selectedImage){
-    document.getElementById("ocrStatus").innerText =
-    "✅ Photo चुन ली गई है। अब Photo पढ़ें दबाएँ।";
-  }
-
-});
-
-
-/* OCR */
-
-async function readPhoto(){
-
-  if(!selectedImage){
-
-    alert("पहले कॉपी की फोटो चुनें।");
-    return;
-
-  }
-
-  const status =
-  document.getElementById("ocrStatus");
-
-  status.innerText =
-  "⏳ Photo पढ़ी जा रही है... इसमें थोड़ा समय लग सकता है।";
-
-  try{
-
-    const result =
-    await Tesseract.recognize(
-      selectedImage,
-      "eng"
-    );
-
-    document.getElementById("ocrText").value =
-    result.data.text;
-
-    status.innerText =
-    "✅ Text निकाल दिया गया है। नीचे उसे सुधार सकते हो।";
-
-  }catch(error){
-
-    console.log(error);
-
-    status.innerText =
-    "❌ Photo पढ़ने में समस्या हुई। साफ फोटो दोबारा try करें।";
-
-  }
-
-}
-
-
-/* NOTES */
-
-function makeNotes(){
-
-  let subject =
-  document.getElementById("subject").value;
-
-  let chapter =
-  document.getElementById("chapter").value;
-
-  let heading =
-  document.getElementById("heading").value;
-
-  let text =
-  document.getElementById("notesText").value;
-
-  let important =
-  document.getElementById("importantText").value;
-
-  /* अगर Notes box खाली है तो OCR text लें */
-
-  if(!text){
-
-    text =
-    document.getElementById("ocrText").value;
-
-  }
-
-  if(!subject){
-    subject="Subject";
-  }
-
-  if(!chapter){
-    chapter="Chapter / Topic";
-  }
-
-  if(!heading){
-    heading="My Notes";
-  }
-
-  if(!text){
-    text="यहाँ आपके Notes दिखाई देंगे।";
-  }
-
-  let importantHTML="";
-
-  if(important){
-
-    importantHTML=`
-
-    <div class="important">
-
-    <strong>📌 Important Point</strong>
-
-    <br><br>
-
-    ${important}
-
-    </div>
-
-    `;
-
-  }
-
-  let formattedText =
-  text.replace(/\n/g,"<br>");
-
-  document.getElementById("notesPreview").innerHTML=`
-
-  <div class="preview-title">
-
-    📚 ${subject}
-
-    <br>
-
-    <small>${chapter}</small>
-
-  </div>
-
-  <div class="note-heading">
-
-    ${heading}
-
-  </div>
-
-  <p>
-
-    ${formattedText}
-
-  </p>
-
-  ${importantHTML}
-
-  <hr>
-
-  <p style="text-align:center">
-  Study Notes Maker
-  </p>
-
-  `;
-
-}
-
-
-/* QUESTION PAPER */
-
-function makePaper(){
-
-  document.getElementById("pSchool").innerText =
-  document.getElementById("school").value ||
-  "YOUR COACHING / SCHOOL NAME";
-
-  document.getElementById("pExam").innerText =
-  document.getElementById("exam").value ||
-  "TEST PAPER";
-
-  document.getElementById("pSubject").innerText =
-  document.getElementById("paperSubject").value ||
-  "________";
-
-  document.getElementById("pClass").innerText =
-  document.getElementById("className").value ||
-  "________";
-
-  document.getElementById("pMarks").innerText =
-  document.getElementById("marks").value ||
-  "________";
-
-  document.getElementById("pTime").innerText =
-  document.getElementById("time").value ||
-  "________";
-
-  document.getElementById("pDate").innerText =
-  document.getElementById("date").value ||
-  "________";
-
-  let questions =
-  document.getElementById("questions").value;
-
-  if(!questions){
-
-    questions =
-    "1. यहाँ आपका पहला Question होगा।\n\n" +
-    "2. यहाँ आपका दूसरा Question होगा।";
-
-  }
-
-  document.getElementById("pQuestions").innerHTML =
-  questions.replace(/\n/g,"<br>");
-
-}
-
-
-/* PRINT / PDF */
-
-function printPage(){
-
-  window.print();
-
-}
-
-</script>
-<script>
-document.addEventListener("click", function(e) {
-
-    const box = e.target;
-
-    if (box.tagName !== "TEXTAREA") return;
-
-    box.style.position = "fixed";
-    box.style.top = "0";
-    box.style.left = "0";
-    box.style.width = "100vw";
-    box.style.height = "100vh";
-    box.style.zIndex = "99999";
-    box.style.background = "white";
-    box.style.color = "#222";
-    box.style.padding = "70px 18px 20px";
-    box.style.fontSize = "20px";
-    box.style.lineHeight = "1.7";
-    box.style.boxSizing = "border-box";
-    box.style.border = "none";
-    box.style.borderRadius = "0";
-    box.style.resize = "none";
-
-    box.focus();
-
-    if (!document.getElementById("notesCloseButton")) {
-
-        const close = document.createElement("button");
-
-        close.id = "notesCloseButton";
-        close.innerText = "✓ Done";
-
-        close.style.position = "fixed";
-        close.style.top = "10px";
-        close.style.right = "12px";
-        close.style.zIndex = "100000";
-        close.style.padding = "10px 18px";
-        close.style.background = "#1976d2";
-        close.style.color = "white";
-        close.style.border = "none";
-        close.style.borderRadius = "8px";
-        close.style.fontSize = "16px";
-
-        close.onclick = function() {
-
-            box.style.position = "";
-            box.style.top = "";
-            box.style.left = "";
-            box.style.width = "";
-            box.style.height = "";
-            box.style.zIndex = "";
-            box.style.background = "";
-            box.style.color = "";
-            box.style.padding = "";
-            box.style.fontSize = "";
-            box.style.lineHeight = "";
-            box.style.boxSizing = "";
-            box.style.border = "";
-            box.style.borderRadius = "";
-            box.style.resize = "";
-
-            close.remove();
-            box.blur();
-        };
-
-        document.body.appendChild(close);
-    }
-});
-</script>
-</body>
-    </html>
+.row>*{
+flex:
