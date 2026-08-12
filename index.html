@@ -2,109 +2,519 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Study Notes Maker</title>
 
+<!-- OCR + PDF libraries -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
-
 body{
-margin:0;
-background:#eef3f8;
-color:#17202a;
-font-family:Arial,"Noto Sans Devanagari",sans-serif
+  margin:0;background:#eef3f8;color:#17202a;
+  font-family:Arial,"Noto Sans Devanagari",sans-serif;
 }
-
 header{
-background:linear-gradient(135deg,#1976d2,#5e35b1);
-color:white;
-padding:22px 15px;
-text-align:center
+  background:linear-gradient(135deg,#1976d2,#3949ab);
+  color:#fff;padding:20px 15px;text-align:center;
 }
-
-header h1{
-margin:0;
-font-size:29px
-}
-
-header p{
-margin:8px 0 0
-}
-
-.container{
-max-width:900px;
-margin:auto;
-padding:12px
-}
-
+header h1{margin:0 0 6px;font-size:27px}
+header p{margin:0;font-size:14px;opacity:.95}
+.container{max-width:950px;margin:auto;padding:12px}
 .card{
-background:white;
-border-radius:18px;
-padding:17px;
-margin:13px 0;
-box-shadow:0 5px 18px #0001
+  background:#fff;border-radius:16px;padding:16px;margin:13px 0;
+  box-shadow:0 3px 16px #0001;
 }
-
-h2{
-margin:0 0 10px
-}
-
-input,textarea{
-width:100%;
-padding:12px;
-border:1px solid #bbb;
-border-radius:10px;
-font-size:16px;
-margin:5px 0 10px
-}
-
-textarea{
-height:130px;
-min-height:130px;
-overflow-y:hidden;
-resize:vertical
-}
-
-textarea:focus{
-outline:2px solid #90caf9
-}
-
+h2{margin:0 0 12px;font-size:20px}
 button{
-border:0;
-border-radius:10px;
-padding:11px 14px;
-margin:4px;
-background:#1976d2;
-color:white;
-font-size:15px;
-cursor:pointer
+  border:0;border-radius:10px;padding:11px 14px;margin:4px;
+  background:#1976d2;color:#fff;font-size:14px;cursor:pointer;
+}
+button.green{background:#2e7d32}
+button.orange{background:#ef6c00}
+button.red{background:#c62828}
+button.gray{background:#546e7a}
+button.purple{background:#6a1b9a}
+button:disabled{opacity:.55;cursor:not-allowed}
+.row{display:flex;gap:7px;flex-wrap:wrap}
+input,textarea,select{
+  width:100%;padding:12px;border:1px solid #bbb;border-radius:10px;
+  font-size:16px;margin:5px 0;font-family:inherit;
+}
+textarea{
+  min-height:145px;resize:vertical;overflow-y:hidden;
+  transition:min-height .15s;
+}
+textarea:focus{min-height:330px}
+.small{font-size:13px;color:#607d8b}
+.status{
+  background:#e3f2fd;border-left:4px solid #1976d2;
+  padding:10px;border-radius:7px;margin-top:8px;
+}
+.progress{height:10px;background:#ddd;border-radius:20px;overflow:hidden;margin:8px 0}
+.progress>div{height:100%;width:0;background:#1976d2;transition:width .2s}
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:4px;padding:8px;
+  background:#f3f5f7;border-radius:10px;margin:7px 0;
+}
+.toolbar button{margin:0;padding:9px 11px}
+.editor{
+  min-height:220px;border:1px solid #bbb;border-radius:10px;
+  padding:14px;background:#fff;line-height:1.65;
+  outline:none;overflow-wrap:anywhere;
+}
+.editor:focus{border-color:#1976d2}
+.highlight{background:#fff176}
+.important{
+  border-left:5px solid #ef6c00;background:#fff8e1;
+  padding:10px;border-radius:7px;margin:8px 0;
+}
+.preview{
+  background:#fff;max-width:760px;margin:auto;padding:35px;
+  min-height:300px;box-shadow:0 1px 7px #0002;
+}
+.preview img{max-width:100%;height:auto;border-radius:8px;margin:10px 0}
+.note-title{font-size:25px;font-weight:bold;text-align:center;margin-bottom:12px}
+.paper{
+  background:#fff;max-width:760px;margin:auto;padding:28px;
+  box-shadow:0 1px 7px #0002;
+}
+.paper h1,.paper h2{text-align:center}
+.q{
+  border-bottom:1px solid #ddd;padding:10px 0;
+  page-break-inside:avoid;
+}
+.hidden{display:none!important}
+#photoPreview{
+  max-width:100%;max-height:420px;display:block;margin:10px auto;
+  border-radius:10px;
+}
+label{font-weight:bold;display:block;margin-top:8px}
+footer{text-align:center;color:#607d8b;padding:25px;font-size:13px}
+@media(max-width:600px){
+  header h1{font-size:23px}
+  .card{padding:12px}
+  .preview,.paper{padding:18px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>📚 Study Notes Maker</h1>
+  <p>Photo → Hindi + English Text → Edit → Smart Notes → PDF</p>
+</header>
+
+<div class="container">
+
+  <!-- PHOTO OCR -->
+  <section class="card">
+    <h2>📷 1. Photo से Text निकालें</h2>
+    <p class="small">
+      अपनी कॉपी/बुक की साफ फोटो चुनें। Hindi + English दोनों का OCR किया जाएगा।
+      OCR के बाद पूरा text आप खुद edit/correct कर सकते हैं।
+    </p>
+
+    <input id="imageInput" type="file" accept="image/*">
+    <img id="photoPreview" class="hidden" alt="Selected photo">
+
+    <div class="row">
+      <button id="ocrBtn" class="green" disabled>🔎 Text निकालें</button>
+      <button id="clearBtn" class="red">🗑️ Clear</button>
+    </div>
+
+    <div class="progress"><div id="progressBar"></div></div>
+    <div id="ocrStatus" class="status">पहले फोटो चुनें।</div>
+
+    <label>Extracted Text — यहाँ गलती खुद ठीक करें</label>
+    <textarea id="rawText" placeholder="Photo से निकला text यहाँ आएगा..."></textarea>
+
+    <div class="row">
+      <button id="smartBtn" class="purple">✨ Smart Notes / Auto Design</button>
+      <button id="copyBtn" class="gray">📋 Copy Text</button>
+    </div>
+  </section>
+
+  <!-- EDITOR -->
+  <section class="card">
+    <h2>✏️ 2. Notes Editor</h2>
+
+    <div class="toolbar">
+      <button onclick="cmd('bold')"><b>B</b></button>
+      <button onclick="cmd('italic')"><i>I</i></button>
+      <button onclick="cmd('underline')"><u>U</u></button>
+      <button onclick="cmd('insertUnorderedList')">• List</button>
+      <button onclick="cmd('insertOrderedList')">1. List</button>
+      <button onclick="cmd('justifyLeft')">⬅️</button>
+      <button onclick="cmd('justifyCenter')">↔️</button>
+      <button onclick="cmd('justifyRight')">➡️</button>
+      <button onclick="highlight()">🟨 Highlight</button>
+      <button onclick="importantBox()">⭐ Important</button>
+      <button onclick="insertHeading()">H2</button>
+      <button onclick="undo()">↶</button>
+      <button onclick="redo()">↷</button>
+    </div>
+
+    <div id="editor" class="editor" contenteditable="true"
+         spellcheck="false">
+      <p>यहाँ notes edit करें...</p>
+    </div>
+
+    <div class="row">
+      <button id="makePreview" class="green">👀 Notes Preview</button>
+      <button id="notesPdf" class="orange">📄 Notes PDF</button>
+      <button id="saveNotes" class="gray">💾 Browser में Save</button>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="card">
+    <h2>👀 3. Notes Preview</h2>
+    <div id="notesPreview" class="preview">
+      <div class="note-title">My Study Notes</div>
+      <p class="small">Preview यहाँ दिखाई देगा।</p>
+    </div>
+  </section>
+
+  <!-- QUESTION PAPER -->
+  <section class="card">
+    <h2>📝 4. Question Paper Maker</h2>
+
+    <label>Question Paper Title</label>
+    <input id="paperTitle" value="Class 12 Study Question Paper">
+
+    <div class="row">
+      <div style="flex:1;min-width:140px">
+        <label>Subject</label>
+        <input id="subject" placeholder="Physics / Chemistry / Maths">
+      </div>
+      <div style="flex:1;min-width:140px">
+        <label>Time</label>
+        <input id="paperTime" value="3 Hours">
+      </div>
+      <div style="flex:1;min-width:140px">
+        <label>Total Marks</label>
+        <input id="totalMarks" value="100">
+      </div>
+    </div>
+
+    <label>Questions — हर question नई line में</label>
+    <textarea id="questions" placeholder="1. Define electric field.
+2. State Coulomb's law.
+3. Explain the principle of superposition."></textarea>
+
+    <div class="row">
+      <button id="makePaper" class="purple">🎨 Design Question Paper</button>
+      <button id="paperPdf" class="orange">📄 Question Paper PDF</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🖼️ 5. Original Photo + Notes</h2>
+    <p class="small">Original photo को notes में रखने के लिए नीचे button दबाएँ।</p>
+    <button id="addPhoto" class="green">🖼️ Photo को Notes में रखें</button>
+  </section>
+
+  <section class="card">
+    <h2>💡 इस्तेमाल करने का सबसे आसान तरीका</h2>
+    <ol>
+      <li>कॉपी/बुक की फोटो चुनें।</li>
+      <li><b>Text निकालें</b> दबाएँ।</li>
+      <li>OCR की गलती हो तो नीचे text खुद ठीक करें।</li>
+      <li><b>Smart Notes</b> दबाएँ।</li>
+      <li>Bold / Highlight / Important Box आदि से design करें।</li>
+      <li>Preview देखें और <b>Notes PDF</b> दबाएँ।</li>
+    </ol>
+  </section>
+
+</div>
+
+<footer>Study Notes Maker • Hindi + English • Photo OCR • Editable Notes • PDF</footer>
+
+<script>
+const imageInput = document.getElementById("imageInput");
+const photoPreview = document.getElementById("photoPreview");
+const ocrBtn = document.getElementById("ocrBtn");
+const rawText = document.getElementById("rawText");
+const editor = document.getElementById("editor");
+const ocrStatus = document.getElementById("ocrStatus");
+const progressBar = document.getElementById("progressBar");
+
+let selectedImageData = "";
+let worker = null;
+
+imageInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    selectedImageData = reader.result;
+    photoPreview.src = selectedImageData;
+    photoPreview.classList.remove("hidden");
+    ocrBtn.disabled = false;
+    ocrStatus.textContent = "फोटो तैयार है। अब 'Text निकालें' दबाएँ।";
+  };
+  reader.readAsDataURL(file);
+});
+
+async function runOCR(){
+  if(!selectedImageData) return;
+
+  ocrBtn.disabled = true;
+  progressBar.style.width = "1%";
+  ocrStatus.textContent = "OCR शुरू हो रहा है... पहली बार थोड़ा समय लग सकता है।";
+
+  try{
+    if(!worker){
+      worker = await Tesseract.createWorker("eng+hin", 1, {
+        logger: m => {
+          if(m.status){
+            const pct = Math.round((m.progress || 0) * 100);
+            progressBar.style.width = pct + "%";
+            ocrStatus.textContent =
+              m.status + (pct ? " — " + pct + "%" : "");
+          }
+        }
+      });
+    }
+
+    const result = await worker.recognize(selectedImageData);
+    rawText.value = result.data.text.trim();
+
+    ocrStatus.textContent =
+      "✅ Text निकाल लिया गया। अब नीचे text को अपनी जरूरत के अनुसार सही कर सकते हैं।";
+    progressBar.style.width = "100%";
+
+    if(rawText.value){
+      editor.innerHTML = textToHtml(rawText.value);
+    }
+  }catch(err){
+    console.error(err);
+    ocrStatus.textContent =
+      "❌ OCR में समस्या आई। Internet चालू रखें और साफ photo से दोबारा कोशिश करें।";
+  }finally{
+    ocrBtn.disabled = false;
+  }
+}
+ocrBtn.addEventListener("click", runOCR);
+
+function textToHtml(text){
+  const lines = text.split(/\r?\n/);
+  let html = "";
+
+  lines.forEach(line => {
+    const t = line.trim();
+    if(!t) return;
+
+    if(/^(question|ques|प्रश्न)\s*[:\-]?\s*\d+/i.test(t) ||
+       /^\d+[\.\)]\s+/.test(t)){
+      html += "<p><b>" + escapeHtml(t) + "</b></p>";
+    }else if(t.length < 70 && /:$/.test(t)){
+      html += "<h2>" + escapeHtml(t) + "</h2>";
+    }else{
+      html += "<p>" + escapeHtml(t) + "</p>";
+    }
+  });
+
+  return html || "<p></p>";
 }
 
-button.green{
-background:#2e7d32
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#039;"
+  }[c]));
 }
 
-button.gray{
-background:#546e7a
+document.getElementById("smartBtn").addEventListener("click", () => {
+  const text = rawText.value.trim();
+  if(!text){
+    alert("पहले photo से text निकालें या text box में text लिखें।");
+    return;
+  }
+  editor.innerHTML = textToHtml(text);
+  document.getElementById("makePreview").click();
+});
+
+function cmd(command){
+  editor.focus();
+  document.execCommand(command,false,null);
 }
 
-button.orange{
-background:#ef6c00
+function highlight(){
+  editor.focus();
+  document.execCommand("backColor",false,"#fff176");
 }
 
-button.red{
-background:#c62828
+function importantBox(){
+  editor.focus();
+  document.execCommand(
+    "insertHTML",false,
+    '<div class="important"><b>⭐ Important:</b> यहाँ important point लिखें।</div>'
+  );
 }
 
-.row{
-display:flex;
-gap:8px;
-flex-wrap:wrap
+function insertHeading(){
+  editor.focus();
+  document.execCommand("formatBlock",false,"h2");
 }
 
-.row>*{
-flex:
+function undo(){editor.focus();document.execCommand("undo")}
+function redo(){editor.focus();document.execCommand("redo")}
+
+document.getElementById("copyBtn").addEventListener("click", async ()=>{
+  await navigator.clipboard.writeText(rawText.value);
+  alert("✅ Text copied!");
+});
+
+document.getElementById("clearBtn").addEventListener("click", ()=>{
+  imageInput.value = "";
+  selectedImageData = "";
+  photoPreview.src = "";
+  photoPreview.classList.add("hidden");
+  rawText.value = "";
+  editor.innerHTML = "<p>यहाँ notes edit करें...</p>";
+  progressBar.style.width = "0";
+  ocrStatus.textContent = "पहले फोटो चुनें।";
+});
+
+document.getElementById("addPhoto").addEventListener("click", ()=>{
+  if(!selectedImageData){
+    alert("पहले photo चुनें।");
+    return;
+  }
+  editor.focus();
+  document.execCommand(
+    "insertHTML",false,
+    '<p><img src="' + selectedImageData + '" alt="Original note photo" style="max-width:100%;"></p>'
+  );
+});
+
+document.getElementById("makePreview").addEventListener("click", ()=>{
+  document.getElementById("notesPreview").innerHTML =
+    '<div class="note-title">My Study Notes</div>' + editor.innerHTML;
+});
+
+document.getElementById("saveNotes").addEventListener("click", ()=>{
+  localStorage.setItem("studyNotesMakerNotes",editor.innerHTML);
+  alert("✅ Notes browser में save हो गए।");
+});
+
+const saved = localStorage.getItem("studyNotesMakerNotes");
+if(saved) editor.innerHTML = saved;
+
+async function elementToPdf(element, filename){
+  const canvas = await html2canvas(element,{
+    scale:2,
+    useCORS:true,
+    backgroundColor:"#ffffff"
+  });
+
+  const {jsPDF} = window.jspdf;
+  const pdf = new jsPDF("p","mm","a4");
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 10;
+  const usableWidth = pageWidth - margin*2;
+  const imgHeight = canvas.height * usableWidth / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = margin;
+  let page = 0;
+
+  while(heightLeft > 0){
+    if(page > 0) pdf.addPage();
+
+    pdf.addImage(
+      canvas.toDataURL("image/jpeg",0.92),
+      "JPEG",
+      margin,
+      position,
+      usableWidth,
+      imgHeight
+    );
+
+    heightLeft -= (pageHeight - margin*2);
+    if(heightLeft > 0) position = margin - (imgHeight - heightLeft);
+    page++;
+  }
+
+  pdf.save(filename);
+}
+
+document.getElementById("notesPdf").addEventListener("click", async ()=>{
+  document.getElementById("makePreview").click();
+  const box = document.getElementById("notesPreview");
+  await elementToPdf(box,"study-notes.pdf");
+});
+
+function makeQuestionPaper(){
+  const title = document.getElementById("paperTitle").value || "Question Paper";
+  const subject = document.getElementById("subject").value || "Subject";
+  const time = document.getElementById("paperTime").value || "3 Hours";
+  const marks = document.getElementById("totalMarks").value || "100";
+  const text = document.getElementById("questions").value.trim();
+
+  const qs = text ? text.split(/\r?\n/).filter(x=>x.trim()) : [];
+
+  let html = `
+    <div class="paper" id="paperPreview">
+      <h1>${escapeHtml(title)}</h1>
+      <p style="text-align:center"><b>${escapeHtml(subject)}</b></p>
+      <hr>
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <b>Time: ${escapeHtml(time)}</b>
+        <b>Max Marks: ${escapeHtml(marks)}</b>
+      </div>
+      <hr>
+      <h2>Questions</h2>
+  `;
+
+  if(!qs.length){
+    html += '<p>कोई question नहीं है। ऊपर questions लिखें।</p>';
+  }else{
+    qs.forEach((q,i)=>{
+      html += '<div class="q"><b>' +
+        escapeHtml(q) + '</b></div>';
+    });
+  }
+
+  html += `
+      <p style="text-align:center;margin-top:30px">
+        <b>— Best of Luck —</b>
+      </p>
+    </div>
+  `;
+
+  return html;
+}
+
+document.getElementById("makePaper").addEventListener("click",()=>{
+  const old = document.getElementById("paperPreview");
+  if(old) old.remove();
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = makeQuestionPaper();
+  document.querySelector(".container").appendChild(wrap.firstElementChild);
+
+  document.getElementById("paperPreview").scrollIntoView({
+    behavior:"smooth",block:"start"
+  });
+});
+
+document.getElementById("paperPdf").addEventListener("click",async()=>{
+  let paper = document.getElementById("paperPreview");
+  if(!paper){
+    document.getElementById("makePaper").click();
+    await new Promise(r=>setTimeout(r,300));
+    paper = document.getElementById("paperPreview");
+  }
+  await elementToPdf(paper,"question-paper.pdf");
+});
+</script>
+</body>
+</html>
